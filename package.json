@@ -1,0 +1,33 @@
+{
+  "name": "app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.2.4",
+    "@chakra-ui/next-js": "^2.4.2",
+    "@chakra-ui/react": "^2.10.2",
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@fontsource/inter": "^5.1.0",
+    "@react-icons/all-files": "^4.1.0",
+    "@splinetool/react-spline": "^4.0.0",
+    "axios": "^1.7.7",
+    "framer-motion": "^11.18.2",
+    "icons": "^1.0.0",
+    "next": "^14.2.24",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "swiper": "^11.2.5"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "14.2.15",
+    "punycode": "^2.3.1"
+  }
+}
