@@ -11,7 +11,7 @@ import {
   Image 
 } from "@chakra-ui/react";
 import Head from "next/head";
-import RotatingGallery from "../components/ProtectedGallery";
+import ProtectedGallery from "../components/ProtectedGallery";
 
 export default function Home() {
   const bgColor = useColorModeValue("gray.50", "gray.900");
@@ -97,8 +97,8 @@ export default function Home() {
             </VStack>
           </Container>
           
-          {/* Rotating Gallery Component */}
-          <RotatingGallery />
+          {/* Protected Gallery Component with Supabase Integration */}
+          <ProtectedGallery />
         </Box>
 
         {/* Footer */}

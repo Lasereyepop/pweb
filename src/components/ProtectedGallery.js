@@ -3,38 +3,33 @@ import { Box, Text, Image, Modal, ModalOverlay, ModalContent, ModalCloseButton, 
 import { motion } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Autoplay, Navigation, Pagination } from "swiper/modules";
+import { createClient } from "@supabase/supabase-js";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
-/** Define multiple categories, each with any number of images */
-const galleries = [
+// Initialize Supabase client
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+// Define the galleries structure, but now with Supabase bucket paths
+const galleryCategories = [
   {
     title: "Chong Qing and Cheng Du",
     description: "The beautiful cities of Southwestern China",
-    images: [
-      "/images/CQ1.jpg", "/images/CQ2.jpg", "/images/CQ3.jpg",
-      "/images/CQ4.jpg", "/images/CQ5.jpg", "/images/CQ6.jpg",
-      "/images/CQ7.jpg", "/images/CQ8.jpg"
-    ],
+    folder: "chongqing-chengdu", // Supabase storage folder name
   },
   {
     title: "Alaska and Seattle",
     description: "The quiet tranquility of winter",
-    images: [
-      "/images/Alaska1.jpg", "/images/Alaska2.jpg", "/images/Seattle1.jpg", "/images/Seattle2.jpg",
-      "/images/Seattle3.jpg", "/images/Seattle4.jpg", "/images/Seattle5.jpg", "/images/Seattle6.jpg"
-    ],
+    folder: "alaska-seattle", // Supabase storage folder name
   },
   {
     title: "Hong Kong and New York",
     description: "Global Financial Centers of the East and West",
-    images: [
-      "/images/HK1.jpg", "/images/HK2.jpg", "/images/HK3.jpg",
-      "/images/HK4.jpg", "/images/NY1.jpg", "/images/NY2.jpg",
-      "/images/NY3.jpg", "/images/NY4.jpg"
-    ],
+    folder: "hongkong-newyork", // Supabase storage folder name
   },
 ];
 
@@ -44,19 +39,72 @@ const ProtectedGallery = () => {
   const [galleryGroups, setGalleryGroups] = useState([]);
   const [slideHeight, setSlideHeight] = useState(250);
   const [isLargerThan768] = useMediaQuery("(min-width: 768px)");
+  const [loading, setLoading] = useState(true);
   const toast = useToast();
   const containerRef = useRef(null);
 
-  // Process galleries
+  // Fetch images from Supabase for each gallery
   useEffect(() => {
-    const processedGalleries = galleries.map(gallery => ({
-      ...gallery,
-      imageSet: gallery.images,
-      totalImages: gallery.images.length
-    }));
-    
-    setGalleryGroups(processedGalleries);
-  }, []);
+    const fetchGalleryImages = async () => {
+      setLoading(true);
+      try {
+        const galleryPromises = galleryCategories.map(async (category) => {
+          // Get files from the specific folder in Supabase Storage
+          const { data, error } = await supabase
+            .storage
+            .from('photos') // Your bucket name
+            .list(category.folder);
+
+          if (error) {
+            console.error(`Error fetching images for ${category.title}:`, error);
+            return {
+              ...category,
+              imageSet: [],
+              totalImages: 0
+            };
+          }
+
+          // Filter for image files only
+          const imageFiles = data.filter(file => 
+            file.name.match(/\.(jpeg|jpg|png|webp)$/i)
+          );
+
+          // Create full URLs for each image
+          // Create full URLs for each image
+          const imageUrls = imageFiles.map(file => {
+            const { data } = supabase
+              .storage
+              .from('photos')
+              .getPublicUrl(`${category.folder}/${file.name}`);
+            
+            return data.publicUrl; // Use data.publicUrl instead of publicURL
+          });
+
+          return {
+            ...category,
+            imageSet: imageUrls,
+            totalImages: imageUrls.length
+          };
+        });
+
+        const resolvedGalleries = await Promise.all(galleryPromises);
+        setGalleryGroups(resolvedGalleries);
+      } catch (error) {
+        console.error("Error loading galleries:", error);
+        toast({
+          title: "Error loading images",
+          description: "There was a problem fetching your images",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGalleryImages();
+  }, [toast]);
 
   // Handle window resizing dynamically - works for both desktop and mobile
   useEffect(() => {
@@ -231,6 +279,20 @@ const ProtectedGallery = () => {
     };
   }, []);
 
+  if (loading) {
+    return (
+      <Box 
+        width="100%" 
+        height="300px" 
+        display="flex" 
+        justifyContent="center" 
+        alignItems="center"
+      >
+        <Text>Loading galleries...</Text>
+      </Box>
+    );
+  }
+
   return (
     <Box 
       ref={containerRef} 
@@ -302,102 +364,110 @@ const ProtectedGallery = () => {
             borderRadius="lg"
             boxShadow="sm"
           >
-            <Swiper
-              effect="coverflow"
-              grabCursor
-              centeredSlides
-              slidesPerView={slidesPerView}
-              spaceBetween={10}
-              loop={true}
-              loopAdditionalSlides={galleryGroup.imageSet.length < 4 ? 4 : 0}
-              autoplay={{
-                delay: 3000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true,
-              }}
-              coverflowEffect={{
-                // Full effect on desktop, slightly reduced on mobile
-                rotate: isLargerThan768 ? 5 : 2,
-                stretch: 0,
-                depth: isLargerThan768 ? 100 : 50,
-                modifier: isLargerThan768 ? 2 : 1.5, 
-                slideShadows: false,
-              }}
-              navigation={true}
-              pagination={{
-                clickable: true,
-                dynamicBullets: true,
-              }}
-              modules={[EffectCoverflow, Autoplay, Navigation, Pagination]}
-              style={{ 
-                width: "100%", 
-                height: "auto", 
-                // More padding on desktop for navigation buttons
-                padding: isLargerThan768 ? "40px 0" : "30px 0",
-              }}
-              // Force update when slidesPerView changes
-              key={`swiper-${slidesPerView}-${index}`}  
-            >
-              {galleryGroup.imageSet.map((src, imgIndex) => (
-                <SwiperSlide 
-                  key={imgIndex} 
-                  onClick={() => setSelectedImage(src)}
-                  style={{
-                    // Maintains the nice staggered effect on desktop
-                    transform: isLargerThan768 ? 
-                      `translateY(${imgIndex % 2 === 0 ? '0px' : '30px'})` : 
-                      `translateY(${imgIndex % 2 === 0 ? '0px' : '15px'})`,
-                    width: 'auto',  // Allow the slide to size naturally
-                  }}
-                >
-                  <motion.div
-                    whileHover={{ scale: 1.05 }}
-                    transition={{ duration: 0.3 }}
+            {galleryGroup.imageSet.length > 0 ? (
+              <Swiper
+                effect="coverflow"
+                grabCursor
+                centeredSlides
+                slidesPerView={slidesPerView}
+                spaceBetween={10}
+                loop={true}
+                loopAdditionalSlides={galleryGroup.imageSet.length < 4 ? 4 : 0}
+                autoplay={{
+                  delay: 3000,
+                  disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
+                }}
+                coverflowEffect={{
+                  // Full effect on desktop, slightly reduced on mobile
+                  rotate: isLargerThan768 ? 5 : 2,
+                  stretch: 0,
+                  depth: isLargerThan768 ? 100 : 50,
+                  modifier: isLargerThan768 ? 2 : 1.5, 
+                  slideShadows: false,
+                }}
+                navigation={true}
+                pagination={{
+                  clickable: true,
+                  dynamicBullets: true,
+                }}
+                modules={[EffectCoverflow, Autoplay, Navigation, Pagination]}
+                style={{ 
+                  width: "100%", 
+                  height: "auto", 
+                  // More padding on desktop for navigation buttons
+                  padding: isLargerThan768 ? "40px 0" : "30px 0",
+                }}
+                // Force update when slidesPerView changes
+                key={`swiper-${slidesPerView}-${index}`}  
+              >
+                {galleryGroup.imageSet.map((src, imgIndex) => (
+                  <SwiperSlide 
+                    key={imgIndex} 
+                    onClick={() => setSelectedImage(src)}
+                    style={{
+                      // Maintains the nice staggered effect on desktop
+                      transform: isLargerThan768 ? 
+                        `translateY(${imgIndex % 2 === 0 ? '0px' : '30px'})` : 
+                        `translateY(${imgIndex % 2 === 0 ? '0px' : '15px'})`,
+                      width: 'auto',  // Allow the slide to size naturally
+                    }}
                   >
-                    <Box
-                      className="watermark-container"
-                      width="100%"
-                      // Uses the dynamic slideHeight that adapts to screen size
-                      height={`${slideHeight}px`}
-                      minWidth={{ base: "200px", md: "250px" }}
-                      maxW={{ base: "300px", md: "400px" }}
-                      mx="auto"
-                      overflow="hidden"
-                      borderRadius="10px"
-                      boxShadow="lg"
-                      bg="white"
-                      cursor="pointer"
-                      position="relative"
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.3 }}
                     >
-                      {/* Hidden watermark */}
-                      <Box className="watermark">
-                        Protected
-                      </Box>
-                      
-                      {/* Low-res version for display */}
-                      <Image
-                        className="protect-image"
-                        src={src}
-                        alt={`${galleryGroup.title} Image ${imgIndex + 1}`}
-                        objectFit="cover"
+                      <Box
+                        className="watermark-container"
                         width="100%"
-                        height="100%"
-                        loading="lazy"
-                        quality={80} // Lower quality for thumbnail
-                        transition="transform 0.5s"
-                        _hover={{ transform: "scale(1.05)" }}
-                        style={{ 
-                          pointerEvents: "none",
-                        }}
-                      />
-                      
-                      {/* Transparent overlay to prevent direct access */}
-                      <Box className="image-overlay"></Box>
-                    </Box>
-                  </motion.div>
-                </SwiperSlide>
-              ))}
-            </Swiper>
+                        // Uses the dynamic slideHeight that adapts to screen size
+                        height={`${slideHeight}px`}
+                        minWidth={{ base: "200px", md: "250px" }}
+                        maxW={{ base: "300px", md: "400px" }}
+                        mx="auto"
+                        overflow="hidden"
+                        borderRadius="10px"
+                        boxShadow="lg"
+                        bg="white"
+                        cursor="pointer"
+                        position="relative"
+                      >
+                        
+                        {/* Low-res version for display */}
+                        <Image
+                          className="protect-image"
+                          src={src}
+                          alt={`${galleryGroup.title} Image ${imgIndex + 1}`}
+                          objectFit="cover"
+                          width="100%"
+                          height="100%"
+                          loading="lazy"
+                          quality={80} // Lower quality for thumbnail
+                          transition="transform 0.5s"
+                          _hover={{ transform: "scale(1.05)" }}
+                          style={{ 
+                            pointerEvents: "none",
+                          }}
+                        />
+                        
+                        {/* Transparent overlay to prevent direct access */}
+                        <Box className="image-overlay"></Box>
+                      </Box>
+                    </motion.div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+            ) : (
+              <Box 
+                width="100%" 
+                height="200px" 
+                display="flex" 
+                justifyContent="center" 
+                alignItems="center"
+              >
+                <Text color="gray.500">No images found in this gallery</Text>
+              </Box>
+            )}
           </Box>
         </VStack>
       ))}
