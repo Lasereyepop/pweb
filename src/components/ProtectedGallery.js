@@ -521,7 +521,7 @@ const ProtectedGallery = () => {
             color="white"
             // Keeps large size on desktop
             fontSize={isLargerThan768 ? "48px" : "32px"}
-            opacity="0.2"
+            opacity="0.1"
           >
             Copyright Protected - Eric Zhou
           </Box>
