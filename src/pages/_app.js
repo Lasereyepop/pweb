@@ -11,9 +11,9 @@ export default function App({ Component, pageProps }) {
   return (
     <ChakraProvider theme={customTheme}>
       <Head>
-        <title>Title</title> {/* Set the title here */}
+        <title>InterChroma</title> {/* Set the title here */}
         {/* Add the favicon here */}
-        <link rel="icon" href="/images/logo.png" type="image/png" height={1} width={5}/>
+        <link rel="icon" href="/images/photograph.png" type="image/png" height={1} width={5}/>
       </Head>
       <main className={inter.className}>
         <Component {...pageProps} />

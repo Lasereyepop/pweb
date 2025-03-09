@@ -28,8 +28,13 @@ const galleryCategories = [
   },
   {
     title: "Hong Kong and New York",
-    description: "Global Financial Centers of the East and West",
+    description: "Global financial centers of the East and West",
     folder: "hongkong-newyork", // Supabase storage folder name
+  },
+  {
+    title: "LA and Spring",
+    description: "My favorite season of the year",
+    folder: "la-spring",
   },
 ];
 
@@ -477,9 +482,7 @@ const ProtectedGallery = () => {
         isOpen={!!selectedImage} 
         onClose={() => setSelectedImage(null)} 
         isCentered 
-        // Optimal size based on device - maintains large modal on desktop
         size={isLargerThan768 ? "xl" : "full"}
-        // Different animation that works well for both device types
         motionPreset={isLargerThan768 ? "scale" : "slideInBottom"}
       >
         <ModalOverlay
@@ -496,16 +499,20 @@ const ProtectedGallery = () => {
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.4 }}
-          // Preserves desktop experience while optimizing for mobile
           maxW={isLargerThan768 ? "90vw" : "100vw"}
           maxH={isLargerThan768 ? "90vh" : "100vh"}
           bg="transparent"
           boxShadow="none"
           overflow="hidden"
-          // Maintains margin on desktop, removes on mobile for full-screen effect
           m={isLargerThan768 ? "auto" : 0}
           borderRadius={isLargerThan768 ? "md" : 0}
           className="no-select watermark-container"
+          // Ensure the content is centered vertically on all devices
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          // Make sure the modal content takes full height on mobile
+          height={isLargerThan768 ? "auto" : "100vh"}
         >
           <ModalCloseButton 
             color="white" 
@@ -519,9 +526,12 @@ const ProtectedGallery = () => {
           <Box 
             className="watermark" 
             color="white"
-            // Keeps large size on desktop
             fontSize={isLargerThan768 ? "48px" : "32px"}
             opacity="0.1"
+            position="absolute"
+            zIndex="1"
+            width="100%"
+            textAlign="center"
           >
             Copyright Protected - Eric Zhou
           </Box>
@@ -530,20 +540,19 @@ const ProtectedGallery = () => {
           <Box 
             position="relative" 
             width="100%" 
-            height="100%"
             display="flex"
             alignItems="center"
             justifyContent="center"
+            // Ensure this box is centered in the modal
+            height="100%"
           >
             <Image 
               src={selectedImage} 
               alt="Enlarged Image" 
-              // Maintains rounded corners on desktop
               borderRadius={isLargerThan768 ? "10px" : 0}
               objectFit="contain"
-              // Optimal sizing for both desktop and mobile
-              maxH={isLargerThan768 ? "90vh" : "100vh"}
-              maxW={isLargerThan768 ? "90vw" : "100vw"}
+              maxH={isLargerThan768 ? "85vh" : "90vh"} // Slightly reduced to ensure it stays within the viewport
+              maxW={isLargerThan768 ? "85vw" : "95vw"}
               margin="0 auto"
               className="protect-image"
               style={{ 

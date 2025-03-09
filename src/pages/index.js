@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>Photography Portfolio</title>
+        <title>InterChroma</title>
         <meta name="description" content="Showcase of my photography work in various styles and settings" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="icon" href="/favicon.ico" />
@@ -67,7 +67,7 @@ export default function Home() {
               px={{ base: 4, md: 0 }}
               lineHeight={{ base: "1.2", md: "1.4" }}
             >
-              My Gallery
+              InterChroma
             </Heading>
             <Text 
               fontSize={subHeadingSize}
@@ -76,7 +76,7 @@ export default function Home() {
               mb={8}
               px={{ base: 4, md: 0 }}
             >
-              Hi! My name is Eric and welcome to my gallery!
+              Hi! My name is Eric and welcome to my photo gallery.
             </Text>
           </Box>
         </Box>
@@ -91,7 +91,7 @@ export default function Home() {
                 maxW="3xl"
                 px={{ base: 4, md: 0 }}
               >
-                With my trusty Ricoh GRIIIx, I try to capture both the simple and beautiful moments of my travels. 
+                With my Ricoh GRIIIx, I try to capture both the simple and beautiful moments of my travels. 
                 I hope you enjoy them as much as I do!
               </Text>
             </VStack>
