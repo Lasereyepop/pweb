@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Button, Fade, Heading } from "@chakra-ui/react";
+import { Box, Button, Fade, Heading, HStack, Link, Image } from "@chakra-ui/react";
 import Head from "next/head";
 import dynamic from "next/dynamic";
 
@@ -156,6 +156,25 @@ export default function Home() {
             </Box>
           </Box>
         </Fade>
+
+        <Box
+          as="footer"
+          position="absolute"
+          bottom="0"
+          w="100%"
+          textAlign="center"
+          py={3}
+          bg="rgba(0, 0, 0, 0.7)"
+          color="white"
+          fontSize="sm"
+          zIndex={30}
+        >
+            <HStack justify="center" spacing={2}>
+              <Link href="https://www.instagram.com/z_.ziyang/" isExternal display="flex" alignItems="center">
+                <Image src="/images/instagram.png" alt="Instagram" boxSize="24px" />
+              </Link>
+            </HStack>
+        </Box>          
       </Box>
     </>
   );

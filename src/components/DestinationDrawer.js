@@ -17,7 +17,7 @@ const DestinationDrawer = ({ onSelect }) => {
         size="sm"
         onClick={() => setOpen(!open)}
       >
-        Destinations
+        Locations
       </Button>
 
       {open && (
