@@ -1,23 +1,26 @@
 import { useState } from "react";
-import dynamic from "next/dynamic";
-import { Box, Button, Fade } from "@chakra-ui/react";
+import { Box, Button, Fade, Heading } from "@chakra-ui/react";
 import Head from "next/head";
+import dynamic from "next/dynamic";
+
+// Import the drawer and dynamically loaded globe
+import DestinationDrawer from "../components/DestinationDrawer";
 const InteractiveGlobe = dynamic(() => import("../components/InteractiveGlobe"), {
   ssr: false,
 });
-
 import ProtectedGallery from "../components/ProtectedGallery";
 
 export default function Home() {
   const [selectedPoint, setSelectedPoint] = useState(null);
+  const [focusPoint, setFocusPoint] = useState(null); // NEW
   const [isGalleryVisible, setIsGalleryVisible] = useState(false);
   const [showTransportOverlay, setShowTransportOverlay] = useState(false);
   const [transitionMessage, setTransitionMessage] = useState("");
-  
 
   const handlePointClick = (point) => {
+    setFocusPoint({ lat: point.lat, lng: point.lng }); // focus globe on point
     setSelectedPoint(point);
-    setTransitionMessage(`🌍 Transporting you to ${point.name}...`);
+    setTransitionMessage(`Transporting you to ${point.name}...`);
     setShowTransportOverlay(true);
     setIsGalleryVisible(false);
 
@@ -26,12 +29,12 @@ export default function Home() {
       setTimeout(() => {
         setIsGalleryVisible(true);
       }, 400);
-    }, 2500);
+    }, 2200);
   };
-  
 
   const handleDismiss = () => {
     setSelectedPoint(null);
+    setIsGalleryVisible(false);
   };
 
   return (
@@ -40,6 +43,29 @@ export default function Home() {
         <title>InterChroma</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       </Head>
+      
+      {!isGalleryVisible && (
+        <Box
+          position="absolute"
+          top="5%"
+          w="100%"
+          px={6}
+          textAlign="center"
+          zIndex={30}
+          color="white"
+        >
+          <Heading
+            fontSize={{ base: "xl", md: "3xl" }}
+            mb={2}
+            fontFamily="'Orbitron', sans-serif"
+          >
+            INTERCHROMA
+          </Heading>
+          <Box fontSize={{ base: "sm", md: "md" }} maxW="600px" mx="auto" color="gray.300">
+            Welcome to my photography archive — a visual journey across cities I've explored and moments I've captured. Click a glowing point on the globe or browse from the destination list.
+          </Box>
+        </Box>
+      )} 
 
       <Box
         bg="black"
@@ -51,10 +77,18 @@ export default function Home() {
         justifyContent="center"
         alignItems="center"
       >
-        <InteractiveGlobe onPointClick={handlePointClick} />
+        {/* Interactive globe with focus support */}
+        <InteractiveGlobe onPointClick={handlePointClick} focusPoint={focusPoint} />
 
-        {/* Transport Overlay */}
-        <Fade in={showTransportOverlay} transition={{ enter: { duration: 0.04 }}}>
+        {/* Drawer with destination list */}
+        <DestinationDrawer
+          onSelect={(point) => {
+            handlePointClick(point); // handles both focus and gallery
+          }}
+        />
+
+        {/* Transporting overlay */}
+        <Fade in={showTransportOverlay} transition={{ enter: { duration: 0.04 } }}>
           <Box
             position="fixed"
             top={0}
@@ -74,8 +108,8 @@ export default function Home() {
           </Box>
         </Fade>
 
-        {/* Fade-in gallery overlay */}
-        <Fade in={isGalleryVisible} transition={{ enter: { duration: 0.6 }}}>
+        {/* Gallery overlay */}
+        <Fade in={isGalleryVisible} transition={{ enter: { duration: 0.2 } }}>
           <Box
             position="fixed"
             top={0}
@@ -90,7 +124,6 @@ export default function Home() {
             zIndex={20}
             onClick={handleDismiss}
           >
-            
             <Button
               onClick={(e) => {
                 e.stopPropagation();
@@ -112,7 +145,7 @@ export default function Home() {
               overflowY="auto"
               px={4}
               pt={2}
-              onClick={(e) => e.stopPropagation()} // Prevent background click from dismissing
+              onClick={(e) => e.stopPropagation()}
             >
               {selectedPoint && (
                 <ProtectedGallery
