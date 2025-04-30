@@ -1,136 +1,128 @@
-import { 
-  Box, 
-  Container, 
-  Heading, 
-  Text, 
-  VStack, 
-  useColorModeValue, 
-  useBreakpointValue, 
-  Link, 
-  IconButton,
-  Image 
-} from "@chakra-ui/react";
+import { useState } from "react";
+import dynamic from "next/dynamic";
+import { Box, Button, Fade } from "@chakra-ui/react";
 import Head from "next/head";
+const InteractiveGlobe = dynamic(() => import("../components/InteractiveGlobe"), {
+  ssr: false,
+});
+
 import ProtectedGallery from "../components/ProtectedGallery";
 
 export default function Home() {
-  const bgColor = useColorModeValue("gray.50", "gray.900");
-  const textColor = useColorModeValue("gray.800", "gray.100");
-  const accentColor = useColorModeValue("blue.500", "blue.300");
+  const [selectedPoint, setSelectedPoint] = useState(null);
+  const [isGalleryVisible, setIsGalleryVisible] = useState(false);
+  const [showTransportOverlay, setShowTransportOverlay] = useState(false);
+  const [transitionMessage, setTransitionMessage] = useState("");
   
-  // Responsive heading sizes
-  const headingSize = useBreakpointValue({ base: "2xl", md: "3xl" });
-  const subHeadingSize = useBreakpointValue({ base: "lg", md: "xl" });
-  const galleryHeadingSize = useBreakpointValue({ base: "lg", md: "xl" });
+
+  const handlePointClick = (point) => {
+    setSelectedPoint(point);
+    setTransitionMessage(`🌍 Transporting you to ${point.name}...`);
+    setShowTransportOverlay(true);
+    setIsGalleryVisible(false);
+
+    setTimeout(() => {
+      setShowTransportOverlay(false);
+      setTimeout(() => {
+        setIsGalleryVisible(true);
+      }, 400);
+    }, 2500);
+  };
   
-  // Responsive spacing
-  const headerPadding = useBreakpointValue({ base: 2, md: 4 });
-  const sectionPadding = useBreakpointValue({ base: 6, md: 10 });
-  const footerPadding = useBreakpointValue({ base: 2, md: 4 });
+
+  const handleDismiss = () => {
+    setSelectedPoint(null);
+  };
 
   return (
     <>
       <Head>
         <title>InterChroma</title>
-        <meta name="description" content="Showcase of my photography work in various styles and settings" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Box minH="100vh" bg={bgColor}>
-        {/* Header Section */}
-        <Box
-          bg="black"
-          color="white"
-          textAlign="center"
-          position="relative"
-          _after={{
-            content: '""',
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            bg: "rgba(0,0,0,0.6)",
-            zIndex: 1
-          }}
-        >
-          <Box position="relative" zIndex={2} py={headerPadding}>
-            <Heading
-              as="h1"
-              size={headingSize}
-              mb={4}
-              fontWeight="bold"
-              bgGradient={`linear(to-r, ${accentColor}, purple.500)`}
-              bgClip="text"
-              padding="10px"
-              px={{ base: 4, md: 0 }}
-              lineHeight={{ base: "1.2", md: "1.4" }}
-            >
-              InterChroma
-            </Heading>
-            <Text 
-              fontSize={subHeadingSize}
-              maxW="2xl" 
-              mx="auto" 
-              mb={8}
-              px={{ base: 4, md: 0 }}
-            >
-              Hi! My name is Eric and welcome to my photo gallery.
-            </Text>
+      <Box
+        bg="black"
+        minH="100vh"
+        w="100vw"
+        overflow="hidden"
+        position="relative"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <InteractiveGlobe onPointClick={handlePointClick} />
+
+        {/* Transport Overlay */}
+        <Fade in={showTransportOverlay} transition={{ enter: { duration: 0.04 }}}>
+          <Box
+            position="fixed"
+            top={0}
+            left={0}
+            w="100vw"
+            h="100vh"
+            bg="black"
+            opacity={0.5}
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            zIndex={50}
+          >
+            <Box color="white" fontSize="2xl" fontWeight="bold">
+              {transitionMessage}
+            </Box>
           </Box>
-        </Box>
+        </Fade>
 
-        {/* Gallery Section */}
-        <Box py={sectionPadding}>
-          <Container maxW="container.xl" centerContent px={{ base: 4, md: 6 }}>
-            <VStack spacing={4} mb={{ base: 8, md: 12 }} textAlign="center">
-              <Text 
-                fontSize={{ base: "md", md: "lg" }} 
-                color="gray.600" 
-                maxW="3xl"
-                px={{ base: 4, md: 0 }}
-              >
-                With my Ricoh GRIIIx, I try to capture both the simple and beautiful moments of my travels. 
-                I hope you enjoy them as much as I do!
-              </Text>
-            </VStack>
-          </Container>
-          
-          {/* Protected Gallery Component with Supabase Integration */}
-          <ProtectedGallery />
-        </Box>
+        {/* Fade-in gallery overlay */}
+        <Fade in={isGalleryVisible} transition={{ enter: { duration: 0.6 }}}>
+          <Box
+            position="fixed"
+            top={0}
+            left={0}
+            w="100vw"
+            h="100vh"
+            bg="rgba(0, 0, 0, 0.95)"
+            display="flex"
+            flexDir="column"
+            alignItems="center"
+            justifyContent="center"
+            zIndex={20}
+            onClick={handleDismiss}
+          >
+            
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsGalleryVisible(false);
+                setSelectedPoint(null);
+              }}
+              colorScheme="whiteAlpha"
+              variant="outline"
+              mb={4}
+              zIndex={30}
+            >
+              Back to Globe
+            </Button>
 
-        {/* Footer */}
-        <Box 
-          as="footer" 
-          bg="gray.900" 
-          color="white" 
-          py={footerPadding} 
-          px={4}
-          textAlign="center"
-        >
-          <Text fontSize={{ base: "sm", md: "md" }}>
-            Please don't steal my photos 🥺
-          </Text>
-
-          <Link href="https://www.instagram.com/z_.ziyang/" isExternal>
-            <IconButton
-              aria-label="Instagram"
-              color="white"
-              _hover={{ bg: "whiteAlpha.300" }}
-              size="lg"
-              rounded="full"
-              icon={
-                <Image
-                  src="/images/instagram.png"
-                  alt="Instagram"
-                  boxSize="24px"
+            <Box
+              w="100%"
+              maxW="1200px"
+              h="85vh"
+              overflowY="auto"
+              px={4}
+              pt={2}
+              onClick={(e) => e.stopPropagation()} // Prevent background click from dismissing
+            >
+              {selectedPoint && (
+                <ProtectedGallery
+                  folder={selectedPoint.galleryFolder}
+                  title={selectedPoint.name}
                 />
-              }
-            />
-          </Link>
-        </Box>
+              )}
+            </Box>
+          </Box>
+        </Fade>
       </Box>
     </>
   );
