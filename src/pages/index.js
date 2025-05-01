@@ -5,9 +5,7 @@ import dynamic from "next/dynamic";
 
 // Import the drawer and dynamically loaded globe
 import DestinationDrawer from "../components/DestinationDrawer";
-const InteractiveGlobe = dynamic(() => import("../components/InteractiveGlobe"), {
-  ssr: false,
-});
+const InteractiveGlobe = dynamic(() => import("../components/InteractiveGlobe"), { ssr: false });
 import ProtectedGallery from "../components/ProtectedGallery";
 
 export default function Home() {
@@ -57,7 +55,6 @@ export default function Home() {
           <Heading
             fontSize={{ base: "xl", md: "3xl" }}
             mb={2}
-            fontFamily="'Orbitron', sans-serif"
           >
             INTERCHROMA
           </Heading>
@@ -102,7 +99,7 @@ export default function Home() {
             alignItems="center"
             zIndex={50}
           >
-            <Box color="white" fontSize="2xl" fontWeight="bold">
+            <Box color="white" fontSize="l" fontWeight="bold">
               {transitionMessage}
             </Box>
           </Box>
@@ -157,24 +154,26 @@ export default function Home() {
           </Box>
         </Fade>
 
-        <Box
-          as="footer"
-          position="absolute"
-          bottom="0"
-          w="100%"
-          textAlign="center"
-          py={3}
-          bg="rgba(0, 0, 0, 0.7)"
-          color="white"
-          fontSize="sm"
-          zIndex={30}
-        >
-            <HStack justify="center" spacing={2}>
-              <Link href="https://www.instagram.com/z_.ziyang/" isExternal display="flex" alignItems="center">
-                <Image src="/images/instagram.png" alt="Instagram" boxSize="24px" />
-              </Link>
-            </HStack>
-        </Box>          
+        {!isGalleryVisible && (
+          <Box
+            as="footer"
+            position="absolute"
+            bottom="0"
+            w="100%"
+            textAlign="center"
+            py={3}
+            bg="rgba(0, 0, 0, 0.7)"
+            color="white"
+            fontSize="sm"
+            zIndex={30}
+          >
+              <HStack justify="center" spacing={2}>
+                <Link href="https://www.instagram.com/z_.ziyang/" isExternal display="flex" alignItems="center">
+                  <Image src="/images/instagram.png" alt="Instagram" boxSize="24px" />
+                </Link>
+              </HStack>
+          </Box>
+        )}          
       </Box>
     </>
   );

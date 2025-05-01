@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import Globe from "react-globe.gl";
 import { Box } from "@chakra-ui/react";
 import { globePoints } from "./globePoints";
+import * as THREE from 'three';
 
 // Constants for animation
 const ARC_REL_LEN = 0.4;
@@ -16,6 +17,10 @@ const InteractiveGlobe = ({ onPointClick, focusPoint }) => {
 
   const [arcsData, setArcsData] = useState([]);
   const [ringsData, setRingsData] = useState([]);
+
+  const CLOUDS_IMG_URL = './images/clouds.png';
+  const CLOUDS_ALT = 0.004;
+  const CLOUDS_ROTATION_SPEED = -0.006;
 
   useEffect(() => {
     if (globeRef.current) {
@@ -96,6 +101,33 @@ const InteractiveGlobe = ({ onPointClick, focusPoint }) => {
     [onPointClick]
   );
 
+  useEffect(() => {
+    if (!globeRef.current) return;
+  
+    const globe = globeRef.current;
+    const scene = globe.scene();
+    const radius = globe.getGlobeRadius?.() || 100;
+  
+    new THREE.TextureLoader().load(CLOUDS_IMG_URL, (cloudsTexture) => {
+      const cloudMesh = new THREE.Mesh(
+        new THREE.SphereGeometry(radius * (1 + CLOUDS_ALT), 75, 75),
+        new THREE.MeshPhongMaterial({ map: cloudsTexture, transparent: true, opacity: 0.3 })
+      );
+  
+      cloudMesh.name = "cloud-layer";
+      setTimeout(() => {
+        scene.add(cloudMesh)
+  
+        const animateClouds = () => {
+          cloudMesh.rotation.y += CLOUDS_ROTATION_SPEED * Math.PI / 180;
+          requestAnimationFrame(animateClouds);
+        };
+    
+        animateClouds();
+      }, 400)
+    });
+  }, []);  
+
   return (
     <Box
       w="100%"
@@ -107,18 +139,19 @@ const InteractiveGlobe = ({ onPointClick, focusPoint }) => {
     >
       <Globe
         ref={globeRef}
-        globeImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-night.jpg"
+        globeImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg"
+        bumpImageUrl="//cdn.jsdelivr.net/npm/three-globe/example/img/earth-topology.png"
         backgroundColor="black"
         pointsData={globePoints}
         pointLat="lat"
         pointLng="lng"
         pointLabel="name"
         pointAltitude={0.05}
-        pointRadius={1.2} // Larger hitbox
+        pointRadius={1.2}
         pointColor={() => "red"}
         onPointClick={handlePointClick}
         arcsData={arcsData}
-        arcColor={() => "white"}
+        arcColor={() => "#39ff14"}
         arcDashLength={ARC_REL_LEN}
         arcDashGap={2}
         arcDashInitialGap={1}
