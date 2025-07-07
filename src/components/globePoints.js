@@ -10,7 +10,7 @@ export const globePoints = [
   { name: "New York", lat: 40.7128, lng: -74.0060, galleryFolder: "newyork" },
   { name: "Osaka", lat: 33.6937, lng: 136.5023, galleryFolder: "osaka" },
   { name: "Seattle", lat: 47.6062, lng: -122.3321, galleryFolder: "seattle" },
-  { name: "Singapore", lat: 1.3521, lng: 103.8198, galleryFolder: "sg" },
+  { name: "Singapore", lat: -1.0000, lng: 103.8198, galleryFolder: "sg" },
   { name: "Taiwan", lat: 23.6978, lng: 120.9605, galleryFolder: "tw" },
   { name: "Tokyo", lat: 35.6762, lng: 139.6503, galleryFolder: "tokyo" },
   { name: "Washington DC", lat: 38.9072, lng: -77.0369, galleryFolder: "dc" }
