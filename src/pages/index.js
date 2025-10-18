@@ -245,14 +245,14 @@ export default function Home() {
           
           <VStack spacing={6} align="stretch">
             <Heading size="lg" color="white" textAlign="center">
-              🤲 Gesture Controls
+              Gesture Controls
             </Heading>
             
             <VStack spacing={4} align="stretch">
               {/* Single Hand Rotation */}
               <Box bg="gray.700" p={4} borderRadius="md">
                 <Heading size="md" color="cyan.300" mb={2}>
-                  🖐️ Single Hand - Globe Rotation
+                  Single Hand - Globe Rotation
                 </Heading>
                 <Text color="gray.300">
                   Show <strong>one hand</strong> and move your <strong>wrist</strong> to rotate the globe
@@ -267,7 +267,7 @@ export default function Home() {
               {/* Two Hand Zoom */}
               <Box bg="gray.700" p={4} borderRadius="md">
                 <Heading size="md" color="orange.300" mb={2}>
-                  ✌️ Two Hands - Zoom Control
+                  Two Hands - Zoom Control
                 </Heading>
                 <Text color="gray.300">
                   Show <strong>both hands</strong> and spread/pinch your <strong>index fingers</strong>
@@ -282,10 +282,10 @@ export default function Home() {
               {/* Peace Sign Voice */}
               <Box bg="gray.700" p={4} borderRadius="md">
                 <Heading size="md" color="yellow.300" mb={2}>
-                  ✌️ Peace Sign - Voice Control
+                  Peace Sign - Voice Control
                 </Heading>
                 <Text color="gray.300">
-                  Make a <strong>peace sign</strong> (✌️) with index and middle fingers extended
+                  Make a <strong>peace sign</strong> with index and middle fingers extended
                 </Text>
                 <Text fontSize="sm" color="gray.400" mt={1}>
                   • Hold peace sign to activate voice recording
@@ -299,7 +299,7 @@ export default function Home() {
 
             <Box bg="blue.900" p={4} borderRadius="md" textAlign="center">
               <Text color="blue.200" fontSize="sm">
-                <strong>💡 Tips:</strong>
+                <strong>Tips:</strong>
                 <br />
                 • Keep your hand steady for better detection
                 <br />
@@ -314,7 +314,7 @@ export default function Home() {
               size="lg"
               onClick={() => setShowGestureInstructions(false)}
             >
-              Got it! Let's explore 🌍
+              Got it! Let's explore
             </Button>
           </VStack>
         </Box>
@@ -330,22 +330,48 @@ export default function Home() {
       </Head>
 
       {!isGalleryVisible && (
-        <Box
-          position="absolute"
-          top="5%"
-          w="100%"
-          px={6}
-          textAlign="center"
-          zIndex={30}
-          color="white"
-        >
-          <Heading fontSize={{ base: "xl", md: "3xl" }} mb={2}>
-            INTERCHROMA
-          </Heading>
-          <Box fontSize={{ base: "sm", md: "md" }} maxW="600px" mx="auto" color="gray.300">
-            Welcome to my photography archive — a visual journey across cities I've explored and moments I've captured. Click a glowing point on the globe or browse from the destination list.
+        <Fade in={true}>
+          <Box
+            position="absolute"
+            top="5%"
+            w="100%"
+            px={6}
+            textAlign="center"
+            zIndex={30}
+            color="white"
+          >
+            <VStack spacing={3}>
+              <Heading
+                fontSize={{ base: "2xl", md: "5xl" }}
+                fontWeight="bold"
+                bgGradient="linear(to-r, cyan.400, purple.500, pink.400)"
+                bgClip="text"
+                letterSpacing="wider"
+                mb={2}
+              >
+                INTERCHROMA
+              </Heading>
+              <Box
+                fontSize={{ base: "sm", md: "lg" }}
+                maxW="700px"
+                mx="auto"
+                color="gray.200"
+                bg="rgba(0, 0, 0, 0.5)"
+                px={6}
+                py={4}
+                borderRadius="xl"
+                backdropFilter="blur(10px)"
+                border="1px solid"
+                borderColor="whiteAlpha.200"
+              >
+                Welcome to my photography archive — a visual journey across cities I've explored and moments I've captured.
+                <Text mt={2} fontSize="sm" color="cyan.300">
+                  Click a glowing point on the globe or browse from the destination list
+                </Text>
+              </Box>
+            </VStack>
           </Box>
-        </Box>
+        </Fade>
       )}
 
       <Box
@@ -374,15 +400,38 @@ export default function Home() {
             w="100vw"
             h="100vh"
             bg="black"
-            opacity={0.5}
+            opacity={0.95}
             display="flex"
             justifyContent="center"
             alignItems="center"
             zIndex={50}
           >
-            <Box color="white" fontSize="l" fontWeight="bold">
-              {transitionMessage}
-            </Box>
+            <VStack spacing={4}>
+              <Box
+                color="white"
+                fontSize={{ base: "xl", md: "2xl" }}
+                fontWeight="bold"
+                textAlign="center"
+                px={6}
+              >
+                {transitionMessage}
+              </Box>
+              <Box
+                w="60px"
+                h="60px"
+                border="4px solid"
+                borderColor="cyan.400"
+                borderTopColor="transparent"
+                borderRadius="50%"
+                animation="spin 1s linear infinite"
+                sx={{
+                  "@keyframes spin": {
+                    "0%": { transform: "rotate(0deg)" },
+                    "100%": { transform: "rotate(360deg)" }
+                  }
+                }}
+              />
+            </VStack>
           </Box>
         </Fade>
 
@@ -403,10 +452,16 @@ export default function Home() {
           >
             <Button
               onClick={handleBackToGlobe}
-              colorScheme="whiteAlpha"
-              variant="outline"
+              colorScheme="cyan"
+              variant="solid"
               mb={4}
               zIndex={30}
+              size="lg"
+              _hover={{
+                transform: "scale(1.05)",
+                boxShadow: "0 0 20px rgba(0, 255, 255, 0.5)"
+              }}
+              transition="all 0.3s"
             >
               Back to Globe
             </Button>
@@ -441,40 +496,63 @@ export default function Home() {
                   <Button
                     onClick={() => setShowGestureInstructions(true)}
                     colorScheme="purple"
-                    variant="ghost"
+                    variant="solid"
                     borderRadius="full"
                     p={2}
-                    boxSize="48px"
+                    boxSize="56px"
                     aria-label="Show Gesture Instructions"
                     title="Show gesture instructions"
+                    bg="purple.600"
+                    _hover={{
+                      bg: "purple.500",
+                      transform: "scale(1.1)",
+                      boxShadow: "0 0 20px rgba(128, 90, 213, 0.6)"
+                    }}
+                    transition="all 0.3s"
                   >
-                    <FaInfoCircle size="20px" />
+                    <FaInfoCircle size="24px" />
                   </Button>
                 )}
-                
+
                 {/* Camera Toggle Button */}
                 <Button
                   onClick={toggleCamera}
-                  colorScheme={isCameraOn ? "green" : "blue"}
-                  variant="ghost"
+                  colorScheme={isCameraOn ? "green" : "cyan"}
+                  variant="solid"
                   borderRadius="full"
                   p={2}
-                  boxSize="48px"
+                  boxSize="56px"
                   aria-label="Gesture Control"
                   title={isCameraOn ? "Turn off gesture control" : "Turn on gesture control"}
                   position="relative"
+                  bg={isCameraOn ? "green.600" : "cyan.600"}
+                  _hover={{
+                    bg: isCameraOn ? "green.500" : "cyan.500",
+                    transform: "scale(1.1)",
+                    boxShadow: isCameraOn
+                      ? "0 0 20px rgba(72, 187, 120, 0.6)"
+                      : "0 0 20px rgba(0, 188, 212, 0.6)"
+                  }}
+                  transition="all 0.3s"
                 >
-                  <FaHandPaper size="20px" />
+                  <FaHandPaper size="24px" />
                   {isCameraOn && (
                     <Box
                       position="absolute"
                       top="-2px"
                       right="-2px"
-                      w="12px"
-                      h="12px"
+                      w="14px"
+                      h="14px"
                       bg="green.400"
                       borderRadius="full"
                       border="2px solid black"
+                      animation="pulse 2s infinite"
+                      sx={{
+                        "@keyframes pulse": {
+                          "0%, 100%": { opacity: 1 },
+                          "50%": { opacity: 0.5 }
+                        }
+                      }}
                     />
                   )}
                 </Button>
@@ -489,12 +567,14 @@ export default function Home() {
                 width="320px"
                 height="240px"
                 zIndex={35}
-                borderRadius="md"
+                borderRadius="xl"
                 overflow="hidden"
-                boxShadow="lg"
-                background="rgba(0, 0, 0, 0.6)"
-                border="2px solid"
-                borderColor={isListening ? "yellow.400" : "gray.600"}
+                boxShadow="0 8px 32px rgba(0, 0, 0, 0.8)"
+                background="rgba(0, 0, 0, 0.7)"
+                border="3px solid"
+                borderColor={isListening ? "yellow.400" : "cyan.500"}
+                backdropFilter="blur(10px)"
+                transition="all 0.3s"
               >
                 <UnifiedGesturePreview
                   stream={mediaStream}
@@ -521,7 +601,7 @@ export default function Home() {
                     <Text color="yellow.300">Listening... (Release peace sign to stop)</Text>
                   ) : (
                     <Text color="gray.300">
-                      ✋ Show hand to rotate • ✌️ Two hands to zoom • ✌️ Peace sign for voice
+                      Show hand to rotate • Two hands to zoom • Peace sign for voice
                     </Text>
                   )}
                 </Box>
@@ -566,15 +646,28 @@ export default function Home() {
               bottom="0"
               w="100%"
               textAlign="center"
-              py={3}
-              bg="rgba(0, 0, 0, 0.7)"
+              py={4}
+              bg="rgba(0, 0, 0, 0.8)"
+              backdropFilter="blur(10px)"
+              borderTop="1px solid"
+              borderColor="whiteAlpha.200"
               color="white"
               fontSize="sm"
               zIndex={30}
             >
-              <HStack justify="center" spacing={2}>
-                <Link href="https://www.instagram.com/z_.ziyang/" isExternal display="flex" alignItems="center">
-                  <Image src="/images/instagram.png" alt="Instagram" boxSize="24px" />
+              <HStack justify="center" spacing={3}>
+                <Link
+                  href="https://www.instagram.com/z_.ziyang/"
+                  isExternal
+                  display="flex"
+                  alignItems="center"
+                  _hover={{
+                    transform: "scale(1.2)",
+                    filter: "brightness(1.3)"
+                  }}
+                  transition="all 0.3s"
+                >
+                  <Image src="/images/instagram.png" alt="Instagram" boxSize="28px" />
                 </Link>
               </HStack>
             </Box>
