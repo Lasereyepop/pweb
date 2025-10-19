@@ -471,9 +471,25 @@ export default function Home() {
               maxW="1200px"
               h="85vh"
               overflowY="auto"
-              px={4}
+              overflowX="hidden"
+              px={6}
               pt={2}
               onClick={(e) => e.stopPropagation()}
+              sx={{
+                '&::-webkit-scrollbar': {
+                  width: '8px',
+                },
+                '&::-webkit-scrollbar-track': {
+                  background: 'transparent',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                  background: 'rgba(0, 188, 212, 0.4)',
+                  borderRadius: '4px',
+                },
+                '&::-webkit-scrollbar-thumb:hover': {
+                  background: 'rgba(0, 188, 212, 0.6)',
+                },
+              }}
             >
               {selectedPoint && (
                 <ProtectedGallery folder={selectedPoint.galleryFolder} title={selectedPoint.name} />
